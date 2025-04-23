@@ -1,0 +1,8 @@
+# Ignore node_modules in both client and server
+client/node_modules/
+server/node_modules/
+
+# Optional: ignore general OS and IDE stuff
+.DS_Store
+*.log
+.env
