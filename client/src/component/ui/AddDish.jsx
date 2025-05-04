@@ -1,6 +1,6 @@
 import React, { useActionState, useEffect, useState } from 'react'
 import { toast } from 'react-toastify';
-function AddDish() {
+function AddDish({setChanges}) {
     const [category,setCategory] = useState([])
     const [priceCol,setPriceCol] = useState([])
     const [isDisable,setIsDisable] = useState(false)
@@ -9,6 +9,7 @@ function AddDish() {
              if(data.flag)
             {
                 setIsDisable(true)
+                setChanges(prev=>!prev)
                 setCategory(data.category)
                 // setPriceCol(data.category)
                 // console.log(data.category[0]["priceCol"])

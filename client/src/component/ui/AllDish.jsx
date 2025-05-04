@@ -1,23 +1,52 @@
 import React, { useEffect, useState } from 'react'
 import { IoIosArrowBack } from "react-icons/io";
 import AllCategoryCard from './AllCategoryCard';
-function AllDish() {
+import DishCard from './dishCard';
+import { toast } from 'react-toastify';
+function AllDish({changes}) {
+  console.log("rendering all dishes ...")
   const [isBack,setIsBack] = useState(false)
   const [dishCategory,SetDishCategory] = useState([])
   const [dish,setDish] = useState([])
   const [category,setCategory] = useState([])
-  const [filter,setFilter] = useState([])
   const [type,setType] = useState("Category")
+  const [changed,setIsChanged] = useState(false)
+  const [changes2,setIsChanges2] = useState(false)
+  useEffect(()=>{console.log('changes chaged 22')},[changes2])
   useEffect(()=>{
+    console.log("running the category state")
     fetch('/api/show-category',{method:"GET"}).then(res=>res.json()).then((res)=>{setCategory(res.category)})
-  },[])
-  useEffect(()=>{
-    fetch('/api/show-dishes',{method:"GET"}).then(res=>res.json()).then((res)=>{setDish(res.data)})
-  },[])
+  },[changes,changes2])
+  // useEffect(()=>{
+  //   fetch(`/api/show-dishes`,{method:"GET"}).then(res=>res.json()).then((res)=>{setDish(res.data)})
+  // },[])
 
  useEffect(()=>{
-  fetch(`/api/show-dishes/${dishCategory}`).then(res=>res.json()).then((data)=>{console.log(data)})
- },[dishCategory])
+  if(dishCategory.id != undefined)
+  {
+    fetch(`/api/show-dishes/${dishCategory.id}`).then(res=>res.json()).then((data)=>{
+      setDish(data.data)
+    })
+  }
+ },[dishCategory,changed,changes])
+
+     function handleDelete(id)
+     {
+         fetch(`/api/delete-dish/${id}`,{
+             method:"DELETE"
+         }).then(res=>res.json()).then((r)=>{
+          console.log(r)
+             if(r.flag)
+             {
+                  console.log("deleted",r.message)              
+                 toast(r.message)
+                 setIsChanged(!changed)
+             }else{
+                 toast(r.message)
+             }
+         })
+     }
+ 
 
   return (
     <div className=' w-full md:w-auto flex flex-col items-center border-t-2 border-orange-300 bg-[#FBF9F0] p-4'>
@@ -35,9 +64,22 @@ function AllDish() {
         {
           isBack 
           ?
-          <div><p>This is the page where Dishes will be shown</p></div>
+            <>
+              <div>
+                <h1 className='font-semibold text-xl md:text-2xl' >{dishCategory.name}</h1>
+              </div>
+              <div className='p-4 flex flex-wrap gap-5'>
+                  {
+                    dish?.length>0
+                    ?
+                      dish.map((n,i) => <DishCard key={i} dish={n} handleDelete={handleDelete} />)
+                    :
+                      <p>There is not Dish for the category: {dishCategory.name}</p>
+                  }
+              </div>
+            </>
           :
-          <AllCategoryCard setType={setType} setIsBack={setIsBack} SetDishCategory={SetDishCategory}  category={category} />
+          <AllCategoryCard changes2={changes2}  setIsChanges2={setIsChanges2} setType={setType} setIsBack={setIsBack} SetDishCategory={SetDishCategory}  category={category} />
         }
 
     </div>

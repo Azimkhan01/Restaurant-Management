@@ -97,6 +97,7 @@ const showDish = async (req, res) => {
   };
 
 const ShowDishById = async(req,res)=>{
+  // console.log(req.params.id)
   try{
 
     if(!req.params.id)
@@ -106,7 +107,7 @@ const ShowDishById = async(req,res)=>{
     if(checkCategory)
     {
       const data = await dishModel.find({category_id:req.params.id})
-        console.log(data)
+        // console.log(data)
       if(data.length > 0)
       {
         return res.status(200).json({message:"The Dishes is found",data:data,flag:true})
@@ -124,8 +125,51 @@ const ShowDishById = async(req,res)=>{
       flag: false})
   }
 }
-  
+ 
+const RemoveDish = async (req, res) => {
+  try {
+    // Validate the presence of dish ID
+    if (!req.params.id) {
+      return res.status(422).json({ message: "The id of the dish is required", flag: false });
+    }
+
+    // Find and delete the dish in one step to reduce database calls
+    const delDish = await dishModel.findOneAndDelete({ _id: req.params.id });
+
+    // If the dish doesn't exist
+    if (!delDish) {
+      return res.status(404).json({ message: `Dish not found with id: ${req.params.id}`, flag: false });
+    }
+
+    // Decrement the dishes count in the category
+    const decCate = await categoryModel.findByIdAndUpdate(
+      delDish.category_id,
+      { $inc: { dishes: -1 } },
+      { new: true } // Optional: return the updated category
+    );
+
+    // console.log("The Return from the decCate",decCate)
+
+    // If the category update fails
+    if (!decCate) {
+      return res.status(501).json({ message: "The category was not updated when deleting the dish", flag: false });
+    }
+
+    // Log the successful deletion
+    const logMessage = `The dish with name: ${delDish.dish_name} is deleted successfully.`;
+    Log.init_req(logMessage, req);
+
+    // Return success response
+    return res.status(200).json({ message: "Dish deleted successfully", flag: true });
+
+  } catch (err) {
+    // Catching any server errors
+    console.error('Error in RemoveDish:', err);  // Log the error for debugging
+    return res.status(500).json({ message: "A server error occurred. Try again later.", flag: false });
+  }
+};
+
   
 
 
-module.exports = {addDish,showDish,ShowDishById}
+module.exports = {addDish,showDish,ShowDishById,RemoveDish}

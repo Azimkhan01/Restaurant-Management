@@ -1,4 +1,4 @@
-const {categoryModel,userModel} = require('../database/db')
+const {categoryModel,userModel,dishModel} = require('../database/db')
 const Log = require('../controller/logController')
 const jwt = require('jsonwebtoken')
 const addCategory = async(req,res)=>{
@@ -65,4 +65,31 @@ const showCategory = async(req,res)=>{
     }
 }
 
-module.exports = {addCategory, showCategory}
+const deleteCategory = async(req,res)=>{
+    try{
+
+        if(!req.params.id)
+            return res.status(422).json({message:"The id is not provided please give id"})
+        const checkCategory = await categoryModel.findById(req.params.id)
+        if(!checkCategory)
+            return res.status(404).json({message:"The category is already deleted.",flag:false})
+        const deleteDish = await dishModel.deleteMany({category_id:req.params.id})
+        if(!deleteDish)
+            return res.status(500).json({message:"The error occur while deleting category related dishes",flag:false})
+        const deleteCat = await categoryModel.deleteOne({_id:req.params.id},{new:true})
+        if(!deleteCat)
+            return res.status(500).json({message:'The dishes is deleted but the cateogory is not deleted',flag:false})
+        if(deleteCat)
+            {
+                        const m = `The category with name ${checkCategory.category_name} and its related dishes are deleted`
+                        Log.init_req(m,req)
+                        return res.status(200).json({message:"The category is deleted succesfully",flag:true})
+            }    
+    }
+    catch(err)
+    {
+        return res.status(500).json({message:"Some error occur try in some time",flag:false})
+    }
+}
+
+module.exports = {addCategory, showCategory, deleteCategory}

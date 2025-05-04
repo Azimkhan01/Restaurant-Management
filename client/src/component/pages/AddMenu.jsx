@@ -7,7 +7,7 @@ function AddProduct() {
   const [category,setCategory] = useState(false)
   const [dish,setDish] = useState(false)
   const [allDish,setAllDish] = useState(true)
-  
+  const [changes,setChanges] = useState(false)
     return (
     <>
       <section className='h-screen w-full'>
@@ -22,18 +22,18 @@ function AddProduct() {
               &&
               <div className='h-screen flex justify-center items-center '>
                 <div>
-                   <p className='text-black text-center text-2xl'>Add Category and Dishes to that category and see what dishes you have</p>
+                   <p className='text-gray-500 text-center text-2xl font-semibold'>Add Category and Dishes so that category yo can see what dishes you have in your category.</p>
                 </div>
               </div> 
           }
           {
-            (category && <AddCategory/>)
+            (category && <AddCategory setChanges={setChanges} />)
           }
           {
-            (dish && <AddDish/>)
+            (dish && <AddDish setChanges={setChanges} />)
           }
           {
-            (allDish && <AllDish/>)
+            (allDish && <AllDish changes={changes} />)
           }
       </div>  
      </section>

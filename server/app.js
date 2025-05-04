@@ -4,7 +4,8 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet')
 const Router = require('./routes/LoginRoute')
-const menuRouter = require('./routes/menuRoute')
+const menuRouter = require('./routes/menuRoute');
+const { tableRouter } = require('./routes/tableRoute');
 require('./database/db')
 require('dotenv').config();
 app.use(helmet());
@@ -20,6 +21,7 @@ app.use(cors(
 ));
 app.use('/',Router)
 app.use('/',menuRouter)
+app.use('/',tableRouter)
 app.listen(process.env.PORT,()=>{
     console.log("The server is listening ....")
 });

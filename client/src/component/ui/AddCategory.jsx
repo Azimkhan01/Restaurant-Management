@@ -1,7 +1,7 @@
 import React,{useActionState, useEffect, useState} from 'react'
 import { toast } from 'react-toastify';
 
-function AddCategory() {
+function AddCategory({setChanges}) {
 const [categoryOrder,setCategoryOrderValue] = useState(0)
 const [isLoading,setIsLoading] = useState(false)
 const [reload,setReload] = useState(false)
@@ -12,7 +12,7 @@ const [reload,setReload] = useState(false)
             {                
 
                 setIsLoading(false)
-
+                setChanges(prev=>!prev)
                 setCategoryOrderValue(Number(data.category[data.category.length-1].order) + 1) 
                 return
             }
@@ -36,7 +36,7 @@ const [reload,setReload] = useState(false)
         {
             let f =formData.get(`col-${i}`)
             pc.push(f)
-            console.log(pc)
+            // console.log(pc)
         }
         if (!categoryName)
           return  toast("Category Name is required",{
@@ -144,8 +144,7 @@ const [reload,setReload] = useState(false)
             {
                 Array.from({length:priceCol}).map((_,i)=>{
                     return <>
-
-                     <input className={`outline-none border-1 border-gray-400 p-2 rounded  w-5/6  md:w-auto`} type='text' name={'col-'+ i} placeholder={`Col name`} required/>                
+                     <input key={i} className={`outline-none border-1 border-gray-400 p-2 rounded  w-5/6  md:w-auto`} type='text' name={'col-'+ i} placeholder={`Col name`} required/>                
                     </>
                 })
             }

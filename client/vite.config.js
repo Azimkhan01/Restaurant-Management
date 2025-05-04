@@ -8,7 +8,7 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:9000', // your backend
+        target: 'https://weapon-ipaq-fall-ex.trycloudflare.com', // your backend
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''), // optional
       },
